@@ -1,0 +1,11 @@
+{
+    "twitch_credentials": {
+        "client_id": "twitch client id"
+    },
+    "discord_webhook_url": "https://canary.discord.com/api/webhooks/etc/etc",
+    "moderator_id": "UID of the modded account/probably your UID", 
+    "bearer_token": "twitch oauth token", 
+    "broadcasters": [
+        {"id": "UID of the channel you wish to monitor"}
+    ]
+}
