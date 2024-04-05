@@ -2,6 +2,8 @@
 
 This Python project is designed to retrieve and log unban requests for specified Twitch channels and sends formatted logs to a Discord webhook for convenient tracking.
 
+At this time, it's best used as a backlog logger as Twitch stores appeals dating back to October 2020.
+
 ## Features
 
 * Tracks unban requests with statuses of "pending", "approved", "denied", and "canceled".
@@ -15,6 +17,9 @@ This Python project is designed to retrieve and log unban requests for specified
     * Direct link to the appeal on Twitch
 * Custom color-coding of embeds based on request status
 * Fetches profile picture of the broadcaster for the embed footer.
+
+![image](https://github.com/phoen88/TwitchBAPL_logs/assets/147262097/a20a2f8b-e5a8-44e4-9753-07ae9d474776)
+
 
 ## Setup
 
