@@ -2,7 +2,8 @@
 
 This Python project is designed to retrieve and log unban requests for specified Twitch channels and sends formatted logs to a Discord webhook for convenient tracking.
 
-At this time, it's best used as a backlog logger as Twitch stores appeals dating back to October 2020.
+At this time, it's best used as a backlog logger (i.e. to log past ban appeals) as Twitch stores appeals dating back to October 2020.
+For something that logs ban appeals in real-time to Discord, that may be coming soon... maybe...
 
 ## Features
 
