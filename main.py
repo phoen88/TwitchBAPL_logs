@@ -6,6 +6,7 @@
 # atp this is better as a backlog retriever for now rather than realtime.
 # realtime ('pending' status), you'd probably want to utilize eventsub.
 # preferably AIO into a bot is the better solution.
+# not tested yet on channels with 200+ total appeals
 # json needs 2b re-done.
 
 import disnake
