@@ -178,8 +178,9 @@ def get_profile_image(broadcaster_id):
         return None  
         
 def process_and_log_unban_requests(unban_requests): 
+    print(f"Total mod-actions collated: {len(unban_requests)}")
     # Send in slow chunks to ensure all 100 results from Twitch API get sent to Discord without hitting a rate limit.
-    CHUNK_SIZE = 3
+    CHUNK_SIZE = 2
     SECONDS_PER_MINUTE = 60
     DELAY_PER_CHUNK = SECONDS_PER_MINUTE / 20  
 
