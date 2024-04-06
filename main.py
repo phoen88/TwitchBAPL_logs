@@ -13,6 +13,7 @@ import requests
 import json
 import time 
 import datetime
+from datetime import datetime, timezone
 
 CONFIG_FILE = "config.json" 
 
@@ -72,54 +73,79 @@ def process_and_log_unban_request(request_data):
         return # TODO: backlog storage for when we eventually add polling hourly pending requests.
 
     embed = disnake.Embed(title="Ban Appeal", color=0x9147FF)
-    # DATE TIME EMBED (top)
+    # &&&& DATE TIME EMBED (top)
+    # **** Fixed: timezones are now correct, it was not converted properly.
     created_at_str = request_data["created_at"] 
-    created_at_dt = datetime.datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%SZ")  
+    created_at_dt = datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%SZ")
+    created_at_dt = created_at_dt.replace(tzinfo=timezone.utc)
     timestamp = int(created_at_dt.timestamp())  
     discord_timestamp = f"<t:{timestamp}:f>"  
     discord_timestamp2 = f"<t:{timestamp}:R>"  
-    embed.description = f"Local Date/Time: {discord_timestamp} ({discord_timestamp2})" 
+    embed.description = f"Appeal Created at: {discord_timestamp} ({discord_timestamp2})"
 
-    # in channel and status
-    embed.add_field(name="In Channel:", value=request_data["broadcaster_name"], inline=True) 
-    status = request_data["status"]
+    # **** IF ITS EVER REQUIRED, WE CAN INTRODUCE APPEAL CLOSED TO THE EMBED
+    # **** It's lowkey useless though; so we'll comment it out for now...
+    #created_at_str = request_data["created_at"]
+    #resolved_at_str = request_data.get("resolved_at")  # Using .get in case 'resolved_at' might not be present (pending, usually)
+    #created_at_dt = datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    #timestamp_created = int(created_at_dt.timestamp())
+    #discord_timestamp_created = f"<t:{timestamp_created}:f>"
+    #discord_timestamp_created_relative = f"<t:{timestamp_created}:R>"
+    # let's remove relative time for now but keep in brackets in-case we ever want it back ({discord_timestamp_resolved_relative})
+    # relative doesn't really look nice when you have two lines showing the bloody date/time
+    #embed_description = f"Appeal Created: {discord_timestamp_created}"
+    #if resolved_at_str:
+    #    resolved_at_dt = datetime.strptime(resolved_at_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    #    timestamp_resolved = int(resolved_at_dt.timestamp())
+    #    discord_timestamp_resolved = f"<t:{timestamp_resolved}:f>"
+    #    discord_timestamp_resolved_relative = f"<t:{timestamp_resolved}:R>"
+    #    embed_description += f"\nAppeal Closed: {discord_timestamp_resolved}"
+    #else:
+    #    embed_description += "\nAppeal Closed: N/A"
+    # Initialize the embed with the constructed description
+    #embed = disnake.Embed(title="Ban Appeal", color=0x9147FF, description=embed_description)
+
+    # &&&& in channel and status
+    # Retrieve and capitalize the status
+    status = request_data["status"].capitalize()
+
+    embed.add_field(name="In Channel", value=request_data["broadcaster_name"], inline=True)
+
     if "moderator_name" in request_data:
         moderator_name = request_data["moderator_name"]
-        if status == "denied":
-            embed.add_field(name="Status:", value=f"{status} by {moderator_name}", inline=True)
-        elif status == "approved":
-            embed.add_field(name="Status:", value=f"{status} by {moderator_name}", inline=True) 
+        embed.add_field(name="Status", value=f"{status} by {moderator_name}", inline=True)
     else:
-        embed.add_field(name="Status:", value=status, inline=True)
-    
-    if status == "denied":
-        embed.color = 0xFF0000  # Red
-    elif status == "approved":
-        embed.color = 0x00FF00  # Green
-    elif status == "canceled":  
-        embed.color = 0xFFFFFF  # White (lowkey this could be orange)
-    elif status == "pending":
-        embed.color = 0xFFA500  # Orange (this could be grey of some sort)
+        embed.add_field(name="Status", value=status, inline=True)
 
-    # User/UID
+    if status.lower() == "denied":
+        embed.color = 0xFF0000  # Red
+    elif status.lower() == "approved":
+        embed.color = 0x00FF00  # Green
+    elif status.lower() == "canceled":  
+        embed.color = 0xFFA500  # Orange
+    elif status.lower() == "pending":
+        embed.color = 0x808080  # Grey
+
+
+    # &&&& User/UID
     offending_user = request_data["user_name"]
     offending_user_id = request_data["user_id"]
     broadcaster_name = request_data["broadcaster_name"]  
     hyperlink = f"https://www.twitch.tv/popout/{broadcaster_name}/viewercard/{offending_user}" 
-    embed.add_field(name="Offending User:", value=f"[{offending_user}]({hyperlink}) ({offending_user_id})", inline=True)
+    embed.add_field(name="Offending User", value=f"[{offending_user}]({hyperlink}) ({offending_user_id})", inline=True)
 
-    # Reason
-    embed.add_field(name="Appeal Reasoning:", value=request_data["text"], inline=False) 
-    # Res Text
+    # &&&& Reason
+    embed.add_field(name="Appeal Reasoning", value=request_data["text"], inline=False) 
+    # &&&& Res Text
     if "resolution_text" in request_data and request_data["resolution_text"]: 
-        embed.add_field(name="Appeal Closure Notes:", value=request_data["resolution_text"], inline=False)
+        embed.add_field(name="Appeal Closure Notes", value=request_data["resolution_text"], inline=False)
     else:
-        embed.add_field(name="Appeal Closure Notes:", value="None provided", inline=False)
+        embed.add_field(name="Appeal Closure Notes", value="None provided", inline=False)
 
     uuid = request_data["id"]
     url = f"https://www.twitch.tv/moderator/unban-request/{uuid}"
     embed.add_field(name="Ban Appeal URL / Request UUID:", value=f"[{uuid}]({url})", inline=False) 
-    # 😎
+    # &&&& 😎
     broadcaster_id = request_data["broadcaster_id"]
     profile_image_url = get_profile_image(broadcaster_id)
 
