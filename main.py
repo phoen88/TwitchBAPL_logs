@@ -1,13 +1,11 @@
 # @phoenpc | phoenp.cc
-# v0.8 - Twitch Unban Request Logs (beta)
+# v0.8.6 - Twitch Unban Request Logs (beta)
 
-# TODO: Scability for bigger channels, ensuring rate limits are met,
-# potential usage of executing from a bot?
+# TODO: potential usage of executing from a bot?
 # atp this is better as a backlog retriever for now rather than realtime.
 # realtime ('pending' status), you'd probably want to utilize eventsub.
 # preferably AIO into a bot is the better solution.
-# not tested yet on channels with 200+ total appeals
-# json needs 2b re-done.
+# json needs 2b re-done (not a priority it just looks ugly as shit).
 
 import disnake
 import requests
